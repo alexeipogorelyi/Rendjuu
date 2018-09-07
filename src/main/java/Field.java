@@ -7,7 +7,6 @@ class Field {
     private Painter painter;
     private GameProcessor gameProcessor;
     private boolean isBlack = true;
-    private boolean firstMove = true;
 
     Field(GraphicsContext graphicsContext) {
         painter = new Painter(graphicsContext);
@@ -30,16 +29,13 @@ class Field {
         int x = (int) event.getX() / 35;
         int y = (int) event.getY() / 35;
 
-        if (firstMove && (x > 9 || x < 7) && (y > 9 || y < 7)) return;
-
-        if (rocks[x][y] != -1) return;
+        if (!gameProcessor.checkRoles(x, y, isBlack)) return;
 
         rocks[x][y] = isBlack ? 1 : 0;
 
         isBlack = !isBlack;
-        firstMove = false;
         painter.drawRock(isBlack, x, y);
 
-        if (gameProcessor.checkWin()) painter.drawWinWindow(gameProcessor.isWhiteWin());
+        if (gameProcessor.checkWin(x, y)) painter.drawWinWindow(gameProcessor.isWhiteWin());
     }
 }
