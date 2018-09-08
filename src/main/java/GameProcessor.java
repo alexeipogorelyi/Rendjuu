@@ -9,11 +9,10 @@ class GameProcessor {
         this.rocks = rocks;
     }
 
-
     boolean checkRoles(int rockX, int rockY, boolean isBlack) {
         if (rocks[rockX][rockY] != -1) return false;
 
-        if (isBlack)
+        if (isBlack) {
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
                     if ((rocks[i][j + 1] == 1 && rocks[i][j + 2] == 1 && rocks[i][j + 3] == 1 &&
@@ -22,6 +21,7 @@ class GameProcessor {
                                     rocks[i + 4][j] == 1 && rocks[i + 5][j] == 1)) return false;
                 }
             }
+        }
 
         int sum = 0;
         for (int i = 0; i < 15; i++) {
@@ -29,7 +29,6 @@ class GameProcessor {
                 sum += rocks[i][j];
             }
         }
-
 
         if (sum == (15 * 15 * -1) && (rockX > 9 || rockX < 7) && (rockY > 9 || rockY < 7)) return false;
 
@@ -90,35 +89,42 @@ class GameProcessor {
             }
         }
 
-        for (int dx = -7; dx < 8; dx++) {
-            for (int x = 0; x < 11; x++) {
-                for (int y = 0; y < 11; y++) {
-                    int imageX = x + dx;
-                    if (x == y && imageX > 0 && imageX < 11) {
-                        if (equalsNums(rocks[imageX][y], rocks[imageX + 1][y + 1], rocks[imageX + 2][y + 2],
-                                rocks[imageX + 3][y + 3], rocks[imageX + 4][y + 4])
-                                && rocks[imageX][y] != -1) {
-                            whiteWin = rocks[imageX][y] != 1;
-                            return true;
-                        }
-                    }
-                    if (x == (15 - y - 1) && imageX > 4 && imageX < 11) {
-                        if (equalsNums(rocks[imageX][15 - y - 1], rocks[imageX - 1][15 - y],
-                                rocks[imageX - 2][15 - y + 1], rocks[imageX - 3][15 - y + 2],
-                                rocks[imageX - 4][15 - y + 3])
-                                && rocks[imageX][15 - y - 1] != -1) {
-                            whiteWin = rocks[imageX][15 - y - 1] != 1;
-                            return true;
-                        }
-                    }
-                }
-            }
+
+        int startXH = rockX;
+        int startYH = rockY;
+        int startXP = rockX;
+
+        while ((startXH > 0 || startXP < 15) && startYH > 0) {
+            startYH--;
+            if (startXH > 0) startXH--;
+            if (startXP < 15) startXP++;
         }
+
+
+        while ((startXH < 11 || startXP > 0) && startYH < 11) {
+            if (startXH < 11 &&
+                    equalsNums(rocks[startXH][startYH], rocks[startXH + 1][startYH + 1],
+                            rocks[startXH + 2][startYH + 2], rocks[startXH + 3][startYH + 3], rocks[startXH + 4][startYH + 4])) {
+                whiteWin = rocks[startXH][rockY] != 1;
+                return true;
+            }
+            if (startXP >= 4 &&
+                    equalsNums(rocks[startXH][startYH], rocks[startXH - 1][startYH + 1],
+                            rocks[startXH - 2][startYH + 2], rocks[startXH - 3][startYH + 3], rocks[startXH - 4][startYH + 4])) {
+                whiteWin = rocks[startXP][rockY] != 1;
+                return true;
+            }
+
+            startXH++;
+            startXP--;
+            startYH++;
+        }
+
         return false;
     }
 
     private boolean equalsNums(int... nums) {
-        return Arrays.stream(nums).noneMatch(num -> num != nums[0]);
+        return Arrays.stream(nums).noneMatch(num -> num == -1) && Arrays.stream(nums).noneMatch(num -> num != nums[0]);
     }
 
     boolean isWhiteWin() {

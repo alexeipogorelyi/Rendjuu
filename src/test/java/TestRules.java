@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -76,6 +75,20 @@ class TestRules {
     void emptyLocation() {
         rocks[0][0] = 1;
         assertFalse(gameProcessor.checkRoles(0, 0, false));
+    }
+
+    @Test
+    void checkWin() {
+        clear();
+
+        for (int i = 0; i < 5; i++) rocks[i][0] = 0;
+        assertTrue(gameProcessor.checkWin(0, 0));
+
+        clear();
+
+        for (int i = 0; i < 5; i++) rocks[i][i] = 0;
+        assertTrue(gameProcessor.checkWin(0, 0));
+
     }
 }
 
